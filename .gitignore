@@ -19,5 +19,16 @@
 *.tar.gz
 *.rar
 
+# IntelliJ
+.idea/
+target/
+dependency-reduced-pom.xml
+NickSystem-API/target/
+NickSystem-Lobby/target/
+NickSystem-Game/target/
+NickSystem-API/dependency-reduced-pom.xml
+NickSystem-Lobby/dependency-reduced-pom.xml
+NickSystem-Game/dependency-reduced-pom.xml
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
