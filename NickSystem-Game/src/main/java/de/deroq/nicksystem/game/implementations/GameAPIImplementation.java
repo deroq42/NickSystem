@@ -1,16 +1,13 @@
 package de.deroq.nicksystem.game.implementations;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import de.deroq.nicksystem.api.GameAPI;
 import de.deroq.nicksystem.api.NickSystem;
 import de.deroq.nicksystem.api.models.NickList;
 import de.deroq.nicksystem.api.models.NickUser;
 import de.deroq.nicksystem.game.NickSystemGame;
 import de.deroq.nicksystem.game.utils.Constants;
-import net.minecraft.server.v1_8_R3.*;
+import de.deroq.nicksystem.game.utils.nms.NMSMethods;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,27 +15,20 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class GameAPIImplementation implements GameAPI {
+public class GameAPIImplementation extends NMSMethods implements GameAPI {
 
     private final NickSystemGame nickSystemGame;
 
     public GameAPIImplementation(NickSystemGame nickSystemGame) {
         this.nickSystemGame = nickSystemGame;
     }
-
-    /*
-     * SOON: REFLECTIONS
-     */
-
 
     @Override
     public void nickUser(NickUser nickUser, String name, String skin) {
@@ -77,23 +67,6 @@ public class GameAPIImplementation implements GameAPI {
     }
 
     /**
-     * Sets the nickname of a player.
-     *
-     * @param player   The player who gets the nickname.
-     * @param nickname The nickname the player gets.
-     */
-    private void setNickname(Player player, String nickname) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-
-        try {
-            /* Set the name inside the field of the players GameProfile. */
-            Objects.requireNonNull(getField(GameProfile.class, "name")).set(craftPlayer.getProfile(), nickname);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Sets the skin of a player.
      *
      * @param player The player who gets the skin.
@@ -110,41 +83,11 @@ public class GameAPIImplementation implements GameAPI {
                     return;
                 }
 
-                Bukkit.getScheduler().runTask(nickSystemGame, () -> {
-                    GameProfile gameProfile = ((CraftPlayer) player).getProfile();
-                    gameProfile.getProperties().removeAll("textures");
-                    /* Put the new textures into the properties. */
-                    gameProfile.getProperties().put("textures", new Property("textures", textures[0], textures[1]));
-                });
+                Bukkit.getScheduler().runTask(nickSystemGame, () -> setTextures(player, textures));
             });
         });
     }
 
-    /**
-     * Performs a fake respawn.
-     *
-     * @param player The Player who gets respawned.
-     */
-    private void fakeRespawn(Player player) {
-        CraftPlayer craftPlayer = ((CraftPlayer) player);
-
-        for (Player players : Bukkit.getOnlinePlayers()) {
-            /* Real Skin and name will be visible for himself and operators. */
-            if (players.equals(player) || players.isOp()) {
-                continue;
-            }
-
-            /* Destroy Player and remove him from the tablist. */
-            sendPacket(players, new PacketPlayOutEntityDestroy(craftPlayer.getEntityId()));
-            sendPacket(players, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, craftPlayer.getHandle()));
-
-            Bukkit.getScheduler().runTaskLater(nickSystemGame, () -> {
-                /* Add player to the tablist and spawn him with new skin and name. */
-                sendPacket(players, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, craftPlayer.getHandle()));
-                sendPacket(players, new PacketPlayOutNamedEntitySpawn(craftPlayer.getHandle()));
-            }, 10);
-        }
-    }
 
     /**
      * Parses the uuid of a player by its name.
@@ -227,24 +170,5 @@ public class GameAPIImplementation implements GameAPI {
         }, Constants.EXECUTOR_SERVICE);
 
         return future;
-    }
-
-    private void sendPacket(Packet<?> packet) {
-        Bukkit.getOnlinePlayers().forEach(player -> ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet));
-    }
-
-    private void sendPacket(Player player, Packet<?> packet) {
-        ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
-    }
-
-    private Field getField(Class<?> clazz, String name) {
-        try {
-            Field field = clazz.getDeclaredField(name);
-            field.setAccessible(true);
-            return field;
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 }
