@@ -13,6 +13,11 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Objects;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class NMSMethods extends Reflections {
 
     /**

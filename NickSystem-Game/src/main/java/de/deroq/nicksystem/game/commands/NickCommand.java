@@ -6,6 +6,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class NickCommand extends Command {
 
     public NickCommand(String name) {

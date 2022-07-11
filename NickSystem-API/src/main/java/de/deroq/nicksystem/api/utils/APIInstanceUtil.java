@@ -7,6 +7,11 @@ import de.deroq.nicksystem.api.NickSystem;
 
 import java.lang.reflect.Field;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class APIInstanceUtil {
 
     public static void setNickAPI(NickAPI nickAPI) throws NoSuchFieldException, IllegalAccessException {

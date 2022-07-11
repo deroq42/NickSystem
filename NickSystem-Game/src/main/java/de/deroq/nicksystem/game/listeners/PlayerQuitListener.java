@@ -6,6 +6,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class PlayerQuitListener implements Listener {
 
     @EventHandler

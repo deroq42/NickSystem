@@ -22,6 +22,11 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class GameAPIImplementation extends NMSMethods implements GameAPI {
 
     private final NickSystemGame nickSystemGame;

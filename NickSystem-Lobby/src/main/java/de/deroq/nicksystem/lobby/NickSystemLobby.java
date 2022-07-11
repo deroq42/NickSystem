@@ -12,6 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class NickSystemLobby extends JavaPlugin {
 
     private MongoDatabaseService databaseService;

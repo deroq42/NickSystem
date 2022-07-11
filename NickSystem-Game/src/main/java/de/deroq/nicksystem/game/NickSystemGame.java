@@ -7,7 +7,6 @@ import de.deroq.nicksystem.api.utils.APIInstanceUtil;
 import de.deroq.nicksystem.game.commands.NickCommand;
 import de.deroq.nicksystem.game.implementations.GameAPIImplementation;
 import de.deroq.nicksystem.game.implementations.NickAPIImplementation;
-import de.deroq.nicksystem.game.listeners.PlayerDeathListener;
 import de.deroq.nicksystem.game.listeners.PlayerJoinListener;
 import de.deroq.nicksystem.game.listeners.PlayerQuitListener;
 import org.bukkit.Bukkit;
@@ -15,6 +14,11 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
 
 public class NickSystemGame extends JavaPlugin {
 
@@ -55,7 +59,7 @@ public class NickSystemGame extends JavaPlugin {
 
             GameAPIImplementation gameAPIImplementation = new GameAPIImplementation(this);
             APIInstanceUtil.setGameAPI(gameAPIImplementation);
-        }catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,7 +68,6 @@ public class NickSystemGame extends JavaPlugin {
         PluginManager pluginManager = Bukkit.getPluginManager();
         pluginManager.registerEvents(new PlayerJoinListener(), this);
         pluginManager.registerEvents(new PlayerQuitListener(), this);
-        pluginManager.registerEvents(new PlayerDeathListener(), this);
     }
 
     private void registerCommands() {

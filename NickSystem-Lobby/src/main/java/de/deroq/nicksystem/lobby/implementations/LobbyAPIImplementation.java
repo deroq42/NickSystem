@@ -6,6 +6,11 @@ import de.deroq.nicksystem.api.models.NickUser;
 
 import java.util.Collections;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class LobbyAPIImplementation implements LobbyAPI {
 
     @Override

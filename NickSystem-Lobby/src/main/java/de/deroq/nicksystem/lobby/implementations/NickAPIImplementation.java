@@ -15,6 +15,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class NickAPIImplementation implements NickAPI {
 
     private final MongoDatabaseServiceMethods databaseServiceMethods;

@@ -8,6 +8,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class PlayerInteractListener implements Listener {
 
     @EventHandler

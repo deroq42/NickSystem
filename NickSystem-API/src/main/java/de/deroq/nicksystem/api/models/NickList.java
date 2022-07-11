@@ -2,6 +2,11 @@ package de.deroq.nicksystem.api.models;
 
 import java.util.List;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public abstract class NickList {
 
     public List<String> nicknames;

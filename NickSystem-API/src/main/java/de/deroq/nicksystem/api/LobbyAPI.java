@@ -2,6 +2,11 @@ package de.deroq.nicksystem.api;
 
 import de.deroq.nicksystem.api.models.NickUser;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public interface LobbyAPI {
 
     /**

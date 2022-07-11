@@ -6,6 +6,11 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class Reflections {
 
     public void sendPacket(Object packet) {

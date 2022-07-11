@@ -1,5 +1,10 @@
 package de.deroq.nicksystem.api.models;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public abstract class NickUser {
 
     public String uuid;

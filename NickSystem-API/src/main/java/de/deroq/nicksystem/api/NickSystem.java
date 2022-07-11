@@ -1,5 +1,10 @@
 package de.deroq.nicksystem.api;
 
+/**
+ * @author deroq
+ * @since 10.07.2022
+ */
+
 public class NickSystem {
 
     private static NickAPI nickAPI;
