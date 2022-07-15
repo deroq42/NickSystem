@@ -3,6 +3,7 @@ package de.deroq.nicksystem.game.commands;
 import de.deroq.nicksystem.api.NickSystem;
 import de.deroq.nicksystem.game.utils.Constants;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -11,14 +12,10 @@ import org.bukkit.entity.Player;
  * @since 10.07.2022
  */
 
-public class NickCommand extends Command {
-
-    public NickCommand(String name) {
-        super(name);
-    }
+public class NickCommand implements CommandExecutor {
 
     @Override
-    public boolean execute(CommandSender commandSender, String s, String[] args) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if(!(commandSender instanceof Player)) {
             return true;
         }

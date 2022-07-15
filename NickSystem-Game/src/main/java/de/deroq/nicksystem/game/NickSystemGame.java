@@ -10,8 +10,6 @@ import de.deroq.nicksystem.game.implementations.NickAPIImplementation;
 import de.deroq.nicksystem.game.listeners.PlayerJoinListener;
 import de.deroq.nicksystem.game.listeners.PlayerQuitListener;
 import org.bukkit.Bukkit;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -71,8 +69,7 @@ public class NickSystemGame extends JavaPlugin {
     }
 
     private void registerCommands() {
-        SimpleCommandMap commandMap = ((CraftServer) Bukkit.getServer()).getCommandMap();
-        commandMap.register("nick", new NickCommand("nick"));
+        getCommand("nick").setExecutor(new NickCommand());
     }
 
     public MongoDatabaseService getDatabaseService() {

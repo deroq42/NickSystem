@@ -2,3 +2,5 @@ name: NickSystemGame
 version: 1.0
 author: deroq
 main: de.deroq.nicksystem.game.NickSystemGame
+commands:
+  nick:

@@ -1,17 +1,13 @@
 package de.deroq.nicksystem.game.utils.nms;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 import de.deroq.nicksystem.game.NickSystemGame;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.util.Objects;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * @author deroq
@@ -27,12 +23,13 @@ public class NMSMethods extends Reflections {
      * @param nickname The nickname the player gets.
      */
     public void setNickname(Player player, String nickname) {
-        CraftPlayer craftPlayer = (CraftPlayer) player;
-
         try {
+            Object handle = getCraftBukkitClass("entity.CraftPlayer").getMethod("getHandle").invoke(player);
+            Object profile = handle.getClass().getMethod("getProfile").invoke(handle);
+
             /* Set the name inside the field of the players GameProfile. */
-            Objects.requireNonNull(getField(GameProfile.class, "name")).set(craftPlayer.getProfile(), nickname);
-        } catch (IllegalAccessException e) {
+            setValue(profile, "name", nickname);
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
@@ -44,10 +41,24 @@ public class NMSMethods extends Reflections {
      * @param textures The textures to set.
      */
     public void setTextures(Player player, String[] textures) {
-        GameProfile gameProfile = ((CraftPlayer) player).getProfile();
-        gameProfile.getProperties().removeAll("textures");
-        /* Put the new textures into the properties. */
-        gameProfile.getProperties().put("textures", new Property("textures", textures[0], textures[1]));
+        try {
+            Object handle = player.getClass().getMethod("getHandle").invoke(player);
+            Object profile = handle.getClass().getMethod("getProfile").invoke(handle);
+            Object propertyMap = profile.getClass().getMethod("getProperties").invoke(profile);
+
+            /* Call the removeAll method, so we can remove the old textures from the properties. */
+            propertyMap.getClass().getMethod("removeAll", Object.class).invoke(propertyMap, "textures");
+
+            /* Gets the Property class and creates a new instance of it with params String, String, String. */
+            Class<?> propertyClass = Class.forName("com.mojang.authlib.properties.Property");
+            Constructor<?> propertyConstructor = propertyClass.getConstructor(String.class, String.class, String.class);
+            Object property = propertyConstructor.newInstance("textures", textures[0], textures[1]);
+
+            /* Call the put method, so we can put the new textures into the properties. */
+            propertyMap.getClass().getMethod("put", Object.class, Object.class).invoke(propertyMap, "textures", property);
+        } catch (IllegalAccessException | NoSuchMethodException | InvocationTargetException | ClassNotFoundException | InstantiationException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -57,15 +68,15 @@ public class NMSMethods extends Reflections {
      */
     public void fakeRespawn(Player player) {
         for (Player players : Bukkit.getOnlinePlayers()) {
-            if (players.equals(player) || players.isOp()) {
+            if (players.equals(player) /*|| players.isOp()*/) {
                 continue;
             }
 
             destroy(player, players);
-            setTablist(player, players, PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER);
+            setTablist(player, players, "REMOVE_PLAYER");
 
             Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(NickSystemGame.class), () -> {
-                setTablist(player, players, PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER);
+                setTablist(player, players, "ADD_PLAYER");
                 spawn(player, players);
             }, 10);
         }
@@ -107,11 +118,10 @@ public class NMSMethods extends Reflections {
     /**
      * Adds or remove the player from the tablist.
      *
-     * @param player               The player to add or remove.
-     * @param enumPlayerInfoAction The action add or remove.
+     * @param player The player to add or remove.
+     * @param action The action add to the tablist or remove from the tablist.
      */
-    private void setTablist(Player player, Player packetReceiver, PacketPlayOutPlayerInfo.EnumPlayerInfoAction
-            enumPlayerInfoAction) {
+    private void setTablist(Player player, Player packetReceiver, String action) {
         try {
             Object handle = player.getClass().getMethod("getHandle").invoke(player);
             Object array = Array.newInstance(getNMSClass("EntityPlayer"), 1);
@@ -121,7 +131,7 @@ public class NMSMethods extends Reflections {
             Class<?> packetPlayOutPlayerInfoClass = getNMSClass("PacketPlayOutPlayerInfo");
             Class<?> enumPlayerInfoActionClass = getNMSClass("PacketPlayOutPlayerInfo$EnumPlayerInfoAction");
             Object addPlayerEnum = enumPlayerInfoActionClass
-                    .getField(enumPlayerInfoAction.toString())
+                    .getField(action)
                     .get(null);
 
             Constructor<?> packetPlayOutPlayerInfoConstructor = packetPlayOutPlayerInfoClass.getConstructor(
